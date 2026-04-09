@@ -5,7 +5,6 @@ import { Galery } from './components/galeria';
 import { useAuth } from '../shared/auth/AuthProvider';
 import { useEffect } from 'react';
 import { useRouter } from "next/navigation";
-import BookPage from './[id]/page';
 import { CarouselRow } from './components/carroselLivros';
 import { livrosfamosos, livrosNovos } from '../data/Books';
 

@@ -21,7 +21,7 @@ export async function PUT(req: NextRequest){
          });
 
          const result = await backendRes.json()
-         return NextResponse.json(result {status: backendRes.status});
+         return NextResponse.json(result, {status: backendRes.status});
     }catch(error){
         console.error(error);
         return NextResponse.json(

@@ -1,4 +1,4 @@
-import "./globals.css";
+import "./global.css"
 import { AuthProvider } from "./shared/auth/AuthProvider";
 import localFont from "next/font/local";
 import { Lexend_Deca } from "next/font/google";
