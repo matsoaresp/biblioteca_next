@@ -74,7 +74,7 @@ export default function CadastroAluno() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://biblioteca-nest-xi6c.onrender.com/api/create', {
+      const response = await fetch('https://biblioteca-nest-xi6c.onrender.com/persons/create', {
 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
