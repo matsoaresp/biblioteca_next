@@ -45,60 +45,68 @@ export default function CadastroAluno() {
   const confirmarSenhaRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
 
-    if (!nome) {
-      nomeRef.current?.focus();
-      setSnackbar({ open: true, message: 'Preencha o nome!', type: 'error' });
-      return;
-    }
-    if (!email) {
-      emailRef.current?.focus();
-      setSnackbar({ open: true, message: 'Preencha o email!', type: 'error' });
-      return;
-    }
-    if (!matricula) {
-      matriculaRef.current?.focus();
-      setSnackbar({ open: true, message: 'Preencha a matrícula!', type: 'error' });
-      return;
-    }
-    if (!senha) {
-      senhaRef.current?.focus();
-      setSnackbar({ open: true, message: 'Preencha a senha!', type: 'error' });
-      return;
-    }
-    if (!confirmarSenha) {
-      confirmarSenhaRef.current?.focus();
-      setSnackbar({ open: true, message: 'Confirme sua senha!', type: 'error' });
-      return;
-    }
+  if (!nome) {
+    nomeRef.current?.focus();
+    setSnackbar({ open: true, message: 'Preencha o nome!', type: 'error' });
+    return;
+  }
+  if (!email) {
+    emailRef.current?.focus();
+    setSnackbar({ open: true, message: 'Preencha o email!', type: 'error' });
+    return;
+  }
+  if (!matricula) {
+    matriculaRef.current?.focus();
+    setSnackbar({ open: true, message: 'Preencha a matrícula!', type: 'error' });
+    return;
+  }
+  if (!senha) {
+    senhaRef.current?.focus();
+    setSnackbar({ open: true, message: 'Preencha a senha!', type: 'error' });
+    return;
+  }
+  if (!confirmarSenha) {
+    confirmarSenhaRef.current?.focus();
+    setSnackbar({ open: true, message: 'Confirme sua senha!', type: 'error' });
+    return;
+  }
 
 
-    const emailValido = /\S+@\S+\.\S+/.test(email);
-    if (!emailValido) {
-      emailRef.current?.focus();
-      setSnackbar({ open: true, message: 'Email inválido!', type: 'error' });
-      return;
-    }
+  const emailValido = /\S+@\S+\.\S+/.test(email);
+  if (!emailValido) {
+    emailRef.current?.focus();
+    setSnackbar({ open: true, message: 'Email inválido!', type: 'error' });
+    return;
+  }
 
-    if (senha.length < 4) {
-      senhaRef.current?.focus();
-      setSnackbar({ open: true, message: 'Senha deve ter pelo menos 4 caracteres', type: 'error' });
-      return;
-    }
+  if (senha.length < 4) {
+    senhaRef.current?.focus();
+    setSnackbar({ open: true, message: 'Senha deve ter pelo menos 4 caracteres', type: 'error' });
+    return;
+  }
 
-    if (senha !== confirmarSenha) {
-      confirmarSenhaRef.current?.focus();
-      setSnackbar({ open: true, message: 'As senhas não coincidem!', type: 'error' });
-      return;
-    }
+  if (senha !== confirmarSenha) {
+    confirmarSenhaRef.current?.focus();
+    setSnackbar({ open: true, message: 'As senhas não coincidem!', type: 'error' });
+    return;
+  }
 
-    setIsLoading(true);
+  setIsLoading(true);
 
-    try {
+  
+  setTimeout(() => {
+    fazerCadastro();
+  }, 3000);
+};
 
-      const response = await fetch('https://biblioteca-nest-xi6c.onrender.com/persons/create', {
+const fazerCadastro = async () => {
+  try {
+    const response = await fetch(
+      'https://biblioteca-nest-xi6c.onrender.com/persons/create',
+      {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -108,40 +116,50 @@ export default function CadastroAluno() {
           password: senha,
           tipo: 'professor'
         })
-      })
+      }
+    );
 
-      const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      data = { message: "Erro inesperado" };
+    }
 
-      setSnackbar({
-        open: true,
-        message: data.message || 'Cadastro realizado com sucesso!',
-        type: 'success'
-      });
+    if (!response.ok) {
+      throw new Error(data.message || "Erro ao cadastrar");
+    }
 
+    setSnackbar({
+      open: true,
+      message: data.message || 'Cadastro realizado com sucesso!',
+      type: 'success'
+    });
 
-      // Limpa o formulário
-      setNome('');
-      setEmail('');
-      setMatricula('');
-      setSenha('');
-      setConfirmarSenha('');
+  
+    setNome('');
+    setEmail('');
+    setMatricula('');
+    setSenha('');
+    setConfirmarSenha('');
 
+    
+    setTimeout(() => {
+      router.push('/professor-login');
+    }, 1500);
 
-      setTimeout(() => {
-        console.log("Redirecionando para login...");
-        router.push('/professor-login');
-      }, 1500);
+  } catch (error: any) {
+    console.error("Erro DETALHADO:", error);
 
-    } catch (error) {
-
-      console.error("Erro CRÍTICO na requisição:", error);
-      setSnackbar({
-        open: true,
-        message: 'Erro de conexão com o servidor. Tente novamente.',
-        type: 'error'
-      });
-    } 
-  };
+    setSnackbar({
+      open: true,
+      message: error.message || 'Erro de conexão com o servidor.',
+      type: 'error'
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#154D71] to-[#1C6EA4] flex items-center justify-center p-4">
