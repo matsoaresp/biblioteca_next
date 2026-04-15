@@ -50,7 +50,7 @@ export default function LoginAluno() {
 
     // Chamada ao backend
     try {
-      const response = await fetch('https://biblioteca-nest-xi6c.onrender.com/api/auth', {
+      const response = await fetch('https://biblioteca-nest-xi6c.onrender.com/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, password: senha })
