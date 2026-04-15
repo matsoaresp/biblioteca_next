@@ -51,6 +51,7 @@ export default function CadastroAluno() {
 
     if (!nome || !email || !matricula || !senha){
       setSnackbar({ open: true, message: 'Preencha todos os campos!', type: 'error' });
+      return;
     }
 
     const emailValido = /\S+@\S+\.\S+/.test(email);
@@ -74,50 +75,61 @@ export default function CadastroAluno() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://biblioteca-nest-xi6c.onrender.com/persons/create', {
-
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: nome,
-          email: email,
-          matricula: matricula,
-          password: senha,
-          tipo: "aluno"
-        }),
-      });
-
-      const data = await response.json();
-
-      // Sucesso (200, 201)
-      setSnackbar({
-        open: true,
-        message: data.message || 'Cadastro realizado com sucesso!',
-        type: 'success'
-      });
-
-      // Limpa o formulário
-      setNome('');
-      setEmail('');
-      setMatricula('');
-      setSenha('');
-      setConfirmarSenha('');
-
-
-      setTimeout(() => {
-        console.log("Redirecionando para login...");
-        router.push('/aluno-login');
-      }, 1500);
-
-    } catch (error) {
-
-      console.error("Erro CRÍTICO na requisição:", error);
-      setSnackbar({
-        open: true,
-        message: 'Erro de conexão com o servidor. Tente novamente.',
-        type: 'error'
-      });
+  const response = await fetch(
+    'https://biblioteca-nest-xi6c.onrender.com/persons/create',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: nome,
+        email: email,
+        matricula: matricula,
+        password: senha,
+        tipo: "aluno"
+      }),
     }
+  );
+
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    data = { message: "Erro inesperado" };
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message || "Erro ao cadastrar");
+  }
+
+  setSnackbar({
+    open: true,
+    message: data.message || 'Cadastro realizado com sucesso!',
+    type: 'success'
+  });
+
+  // limpa
+  setNome('');
+  setEmail('');
+  setMatricula('');
+  setSenha('');
+  setConfirmarSenha('');
+
+  setTimeout(() => {
+    router.push('/aluno-login');
+  }, 1500);
+
+} catch (error: any) {
+  console.error("Erro DETALHADO:", error);
+
+  setSnackbar({
+    open: true,
+    message: error.message || 'Erro de conexão com o servidor.',
+    type: 'error'
+  });
+
+} finally {
+  setIsLoading(false); 
+}
   };
 
   return (
